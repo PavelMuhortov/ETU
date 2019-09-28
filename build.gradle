@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'com.example'
+version '1.0.0-SNAPSHOT'
+
+sourceCompatibility = JavaVersion.VERSION_11
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation 'ch.qos.logback:logback-classic:1.2.3'
+
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+}
+
+application {
+    mainClassName = 'com.example.market.swingview.Application'
+}
