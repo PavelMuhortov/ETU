@@ -3,6 +3,9 @@ package com.example.market.swingview.model;
 import com.example.market.core.model.BaseModel;
 import com.example.market.core.model.Named;
 
+/**
+ * Пример реализации модели данных
+ */
 public class Product
         extends BaseModel<Product> {
 

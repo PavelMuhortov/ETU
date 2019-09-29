@@ -2,17 +2,14 @@ package com.example.market.consoleview.view;
 
 import com.example.market.core.model.Model;
 import com.example.market.core.model.PropDef;
-import com.example.market.core.view.EditView;
 
 import java.util.List;
 
 public class ConsoleEditView<M extends Model<M>>
-        extends ConsoleView
-        implements EditView<M> {
+        extends ConsoleView {
 
     private static final int SIZE = 20;
 
-    @Override
     public M edit(M model) {
         final List<PropDef> propDefs = model.getPropDefs();
         while (true) {

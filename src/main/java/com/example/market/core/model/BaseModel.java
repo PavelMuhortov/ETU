@@ -5,6 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Базовый класс для создаия моделей. Реализует интерфейс {@link Model}. Для использования достаточно унаследовать класс
+ * и объявить необходимые поля. Для задания имени отображения можно использовать аннотацию {@link Named}.
+ * Поддерживаются только примитивные типы данных.
+ * @param <M>
+ */
 public class BaseModel<M extends Model>
         implements Model<M> {
 

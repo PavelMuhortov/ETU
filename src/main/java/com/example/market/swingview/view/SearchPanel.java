@@ -1,65 +1,78 @@
 package com.example.market.swingview.view;
 
+import com.example.market.core.model.PropDef;
+
 import javax.swing.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * Панель поиска по имени колонки
+ */
 public class SearchPanel extends JPanel {
 
-
+    public static final String DEFAULT_TEXT = "Enter text     ";
     private final JComboBox<String> filterProperty;
     private final JTextField filterValue;
     private final JButton search;
-    private final JComboBox<String> sortBy;
-    private final JButton sort;
+    private final List<PropDef> propDefs;
 
-    public SearchPanel(String[] propertyNames) {
+    public SearchPanel(List<PropDef> propDefs) {
+        this.propDefs = propDefs;
+        String[] propertyNames = this.propDefs.stream()
+                .map(PropDef::getPropertyDisplayedName)
+                .toArray(String[]::new);
         filterProperty = new JComboBox<>(propertyNames);
-        String defaultText = "Enter text";
-        filterValue = new JTextField(defaultText);
+        filterValue = new JTextField(DEFAULT_TEXT);
         filterValue.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent focusEvent) {
-                if (filterValue.getText().equals(defaultText))
+                if (filterValue.getText().equals(DEFAULT_TEXT))
                     filterValue.setText("");
             }
 
             @Override
             public void focusLost(FocusEvent focusEvent) {
                 if (filterValue.getText().isBlank())
-                    filterValue.setText(defaultText);
+                    filterValue.setText(DEFAULT_TEXT);
             }
         });
         search = new JButton("Search");
-        JLabel sortByLabel = new JLabel("Sort by");
-        sortBy = new JComboBox<>(propertyNames);
-        sort = new JButton("Sort");
         add(filterProperty);
         add(filterValue);
         add(search);
-//        add(sortByLabel);
-//        add(sortBy);
-//        add(sort);
     }
 
+    /**
+     * Добавляет слушателя кнопки поиск
+     * @param consumer
+     */
     public void onFilter(Consumer<FilterOptions> consumer) {
         search.addActionListener(event -> {
             String property = (String) filterProperty.getSelectedItem();
+            String propertyName = propDefs.stream()
+                    .filter(propDef -> propDef.getPropertyDisplayedName().equals(property))
+                    .map(PropDef::getPropertyName)
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Can't find property name for " + property));
             String value = filterValue.getText();
-            consumer.accept(new FilterOptions(property, value));
+            consumer.accept(new FilterOptions(propertyName, value));
         });
     }
 
-    public void onSort(Consumer<String> consumer) {
-        sort.addActionListener(event -> {
-            String property = (String) sortBy.getSelectedItem();
-            consumer.accept(property);
-        });
-    }
-
+    /**
+     * Данные поиска
+     */
     public static class FilterOptions {
+        /**
+         * имя поля
+         */
         private final String property;
+        /**
+         * значение поля
+         */
         private final String value;
 
         public FilterOptions(String property, String value) {

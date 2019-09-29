@@ -1,36 +1,40 @@
 package com.example.market.core.controller;
 
-import com.example.market.core.data.Storage;
+import com.example.market.core.data.Repository;
 import com.example.market.core.model.Model;
 
 import java.util.Objects;
 
+/**
+ * Базовая реализация {@link TableController}
+ * @param <M>
+ */
 public abstract class BaseTableController<M extends Model<M>>
         implements TableController<M> {
 
-    private Storage<M> storage;
+    private Repository<M> repository;
 
     @Override
     public void delete(long index) {
-        getStorage().delete(index);
+        getRepository().delete(index);
     }
 
     @Override
     public void save(M model) {
-        getStorage().save(model);
+        getRepository().save(model);
     }
 
     @Override
     public M find(long id) {
-        return getStorage().find(id);
+        return getRepository().find(id);
     }
 
-    protected Storage<M> getStorage() {
-        return Objects.requireNonNull(storage, "Storage is null");
+    protected Repository<M> getRepository() {
+        return Objects.requireNonNull(repository, "Storage is null");
     }
 
     @Override
-    public void setStorage(Storage<M> storage) {
-        this.storage = storage;
+    public void setRepository(Repository<M> repository) {
+        this.repository = repository;
     }
 }

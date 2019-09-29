@@ -17,6 +17,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Отображение данных в табличном виде
+ * @param <M>
+ */
 public class SwingTableView<M extends Model<M>>
         extends JPanel
         implements TableView<M> {
@@ -33,12 +37,9 @@ public class SwingTableView<M extends Model<M>>
 
     private JTable table;
 
-    private volatile String sortBy = null;
-
-    private volatile String filterName = null;
-
-    private volatile String filterValue = null;
-
+    /**
+     * Инициализирует компоненты отображения
+     */
     @SuppressWarnings("deprecation")
     @Override
     public void show() {
@@ -49,9 +50,8 @@ public class SwingTableView<M extends Model<M>>
         setLayout(new BorderLayout());
         TableToolbar toolBar = new TableToolbar();
         add(toolBar, BorderLayout.NORTH);
-        SearchPanel searchPanel = new SearchPanel(propertyNames.toArray(new String[0]));
-        searchPanel.onSort(property -> fillTable(dataSupplier.sortBy(property)));
-        searchPanel.onFilter(filterOptions -> fillTable(dataSupplier.findBy(filterOptions.getProperty(), filterOptions.getValue())));
+        SearchPanel searchPanel = new SearchPanel(props);
+        setSearchPanelListeners(searchPanel);
         add(searchPanel, BorderLayout.SOUTH);
         String[] propertyNames = Stream.concat(Stream.of("Id"), props.stream()
                 .map(PropDef::getPropertyDisplayedName))
@@ -63,6 +63,26 @@ public class SwingTableView<M extends Model<M>>
             }
         };
         table = new JTable(tableModel);
+        setToolbarListeners(toolBar);
+        Box contents = new Box(BoxLayout.Y_AXIS);
+        add(contents, BorderLayout.CENTER);
+        contents.add(new JScrollPane(table));
+        fillTable();
+    }
+
+    /**
+     * Устанавливает слушателей панели поиска
+     * @param searchPanel
+     */
+    private void setSearchPanelListeners(SearchPanel searchPanel) {
+        searchPanel.onFilter(filterOptions -> fillTable(dataSupplier.findBy(filterOptions.getProperty(), filterOptions.getValue())));
+    }
+
+    /**
+     * Устанавливает слушателей панели инструментов
+     * @param toolBar
+     */
+    private void setToolbarListeners(TableToolbar toolBar) {
         toolBar.onDelete(() -> {
             final int[] rows = table.getSelectedRows();
             LOG.debug("Selected rows: {}", Arrays.toString(rows));
@@ -75,19 +95,18 @@ public class SwingTableView<M extends Model<M>>
                 .onAdd(() -> {
                     LOG.debug("Add entry event received");
                     final M model = controller.newOne();
-                    SwingUtilities.invokeLater(() -> addNewRow(model));
+                    addNewRow(model);
                 })
                 .onSave(() -> {
                     save();
                     fillTable();
                 })
                 .onRefresh(this::fillTable);
-        Box contents = new Box(BoxLayout.Y_AXIS);
-        add(contents, BorderLayout.CENTER);
-        contents.add(new JScrollPane(table));
-        fillTable();
     }
 
+    /**
+     * Заполняет отображение данными
+     */
     private void fillTable() {
         fillTable(dataSupplier.getAll());
     }
@@ -102,6 +121,9 @@ public class SwingTableView<M extends Model<M>>
         this.dataSupplier = dataSupplier;
     }
 
+    /**
+     * сохраняет измененные данные
+     */
     private void save() {
         int rows = table.getModel().getRowCount();
         for (int i = 0; i < rows; i++) {
@@ -118,12 +140,20 @@ public class SwingTableView<M extends Model<M>>
         }
     }
 
+    /**
+     * заполняет отображение данными
+     * @param data
+     */
     private void fillTable(Collection<M> data) {
         tableModel.getDataVector().removeAllElements();
         tableModel.fireTableDataChanged();
         data.forEach(this::addNewRow);
     }
 
+    /**
+     * добавляет новую строку в таблицу
+     * @param model
+     */
     private void addNewRow(M model) {
         final Object[] values = Stream.concat(Stream.of(model.getId()), propertyNames.stream()
                 .map(model::getPropertyValue))

@@ -5,13 +5,17 @@ import com.example.market.core.data.Repository;
 import com.example.market.core.model.Model;
 import com.example.market.core.view.TableView;
 
+/**
+ * Компонует и настраивает Model-View-Controller связку приложения.
+ * @param <M>
+ */
 public class TableModule<M extends Model<M>>
         implements Module {
 
     private TableView<M> view;
 
     public TableModule(Repository<M> repository, TableController<M> controller, TableView<M> view) {
-        controller.setStorage(repository);
+        controller.setRepository(repository);
         view.setController(controller);
         view.setDataSupplier(repository);
         this.view = view;
