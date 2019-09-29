@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Предоставляет возможность указать имя поля для отображения
- * {@link PropDef#propertyDisplayedName}
+ * {@link BaseModel.PropDef#propertyDisplayedName}
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

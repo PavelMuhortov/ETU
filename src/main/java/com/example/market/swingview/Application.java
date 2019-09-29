@@ -1,7 +1,7 @@
 package com.example.market.swingview;
 
-import com.example.market.consoleview.model.InMemoryStorage;
 import com.example.market.core.controller.TableController;
+import com.example.market.core.data.InMemoryStorage;
 import com.example.market.core.data.Repository;
 import com.example.market.core.module.Module;
 import com.example.market.core.module.TableModule;

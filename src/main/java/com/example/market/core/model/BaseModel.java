@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
  * Базовый класс для создаия моделей. Реализует интерфейс {@link Model}. Для использования достаточно унаследовать класс
  * и объявить необходимые поля. Для задания имени отображения можно использовать аннотацию {@link Named}.
  * Поддерживаются только примитивные типы данных.
+ *
  * @param <M>
  */
 public class BaseModel<M extends Model>
@@ -16,12 +17,17 @@ public class BaseModel<M extends Model>
 
     private long id;
 
-    private List<PropDef> propDefs;
+    private List<String> propertyNames;
+
+    private List<String> propertyDisplayNames;
 
     public BaseModel() {
         final Field[] fields = getClass().getDeclaredFields();
-        propDefs = Arrays.stream(fields)
-                .map(field -> new PropDef(field.getName(), getDisplayedName(field)))
+        propertyNames = Arrays.stream(fields)
+                .map(Field::getName)
+                .collect(Collectors.toList());
+        propertyDisplayNames = Arrays.stream(fields)
+                .map(this::getDisplayedName)
                 .collect(Collectors.toList());
     }
 
@@ -45,8 +51,14 @@ public class BaseModel<M extends Model>
     }
 
     @Override
-    public List<PropDef> getPropDefs() {
-        return propDefs;
+    public List<String> getPropertyNames() {
+        return propertyNames;
+    }
+
+    @Override
+    public String getDisplayName(String propertyName) {
+        int i = propertyNames.indexOf(propertyName);
+        return propertyDisplayNames.get(i);
     }
 
     @Override
@@ -105,8 +117,7 @@ public class BaseModel<M extends Model>
     @Override
     public String toString() {
         return "Id: " + id + ", " +
-                propDefs.stream()
-                        .map(PropDef::getPropertyName)
+                propertyNames.stream()
                         .map(propName -> propName + ": " + getPropertyValue(propName))
                         .collect(Collectors.joining(", "));
     }

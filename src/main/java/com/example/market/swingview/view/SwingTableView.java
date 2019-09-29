@@ -3,7 +3,6 @@ package com.example.market.swingview.view;
 import com.example.market.core.controller.TableController;
 import com.example.market.core.data.DataSupplier;
 import com.example.market.core.model.Model;
-import com.example.market.core.model.PropDef;
 import com.example.market.core.view.TableView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +18,7 @@ import java.util.stream.Stream;
 
 /**
  * Отображение данных в табличном виде
+ *
  * @param <M>
  */
 public class SwingTableView<M extends Model<M>>
@@ -43,20 +43,20 @@ public class SwingTableView<M extends Model<M>>
     @SuppressWarnings("deprecation")
     @Override
     public void show() {
-        List<PropDef> props = controller.newOne().getPropDefs();
-        propertyNames = props.stream()
-                .map(PropDef::getPropertyName)
-                .collect(Collectors.toList());
+        M model = controller.newOne();
+        propertyNames = model.getPropertyNames();
         setLayout(new BorderLayout());
         TableToolbar toolBar = new TableToolbar();
         add(toolBar, BorderLayout.NORTH);
-        SearchPanel searchPanel = new SearchPanel(props);
+        List<String> propertyDisplayNames = propertyNames.stream()
+                .map(model::getDisplayName)
+                .collect(Collectors.toList());
+        SearchPanel searchPanel = new SearchPanel(propertyNames, propertyDisplayNames);
         setSearchPanelListeners(searchPanel);
         add(searchPanel, BorderLayout.SOUTH);
-        String[] propertyNames = Stream.concat(Stream.of("Id"), props.stream()
-                .map(PropDef::getPropertyDisplayedName))
+        String[] propertyDispNames = Stream.concat(Stream.of("Id"), propertyDisplayNames.stream())
                 .toArray(String[]::new);
-        tableModel = new DefaultTableModel(propertyNames, 0) {
+        tableModel = new DefaultTableModel(propertyDispNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return column != 0;
@@ -72,6 +72,7 @@ public class SwingTableView<M extends Model<M>>
 
     /**
      * Устанавливает слушателей панели поиска
+     *
      * @param searchPanel
      */
     private void setSearchPanelListeners(SearchPanel searchPanel) {
@@ -80,6 +81,7 @@ public class SwingTableView<M extends Model<M>>
 
     /**
      * Устанавливает слушателей панели инструментов
+     *
      * @param toolBar
      */
     private void setToolbarListeners(TableToolbar toolBar) {
@@ -142,6 +144,7 @@ public class SwingTableView<M extends Model<M>>
 
     /**
      * заполняет отображение данными
+     *
      * @param data
      */
     private void fillTable(Collection<M> data) {
@@ -152,6 +155,7 @@ public class SwingTableView<M extends Model<M>>
 
     /**
      * добавляет новую строку в таблицу
+     *
      * @param model
      */
     private void addNewRow(M model) {
