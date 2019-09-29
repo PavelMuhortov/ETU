@@ -11,6 +11,11 @@ public interface Repository<M extends Model<M>>
 
     void delete(long index);
 
+    /**
+     * Сохраняет модель. Метод должен устанавливать модели уникальный идентификатор. {@link Model#setId(long)}
+     *
+     * @param model
+     */
     void save(M model);
 
     M find(long index);
