@@ -1,7 +1,7 @@
 package com.example.market.swingview;
 
 import com.example.market.core.controller.TableController;
-import com.example.market.core.data.InMemoryStorage;
+import com.example.market.core.data.FileRepository;
 import com.example.market.core.data.Repository;
 import com.example.market.core.module.Module;
 import com.example.market.core.module.TableModule;
@@ -10,6 +10,7 @@ import com.example.market.swingview.view.SwingTableView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.nio.file.Path;
 
 public class Application {
 
@@ -26,9 +27,12 @@ public class Application {
 
     private static void createProductTableModule(SwingTableView<Product> tableView) {
         final TableController<Product> controller = TableController.newInstance(Product.class);
-        final Repository<Product> repository = new InMemoryStorage<>();
-        repository.save(new Product("Orange", "Fruit", 7, "Кг"));
-        repository.save(new Product("Apple", "Fruit", 7, "Кг"));
+        final Repository<Product> repository = new FileRepository<>(Path.of("temp.txt"), Product::new);
+        try {
+            repository.save(new Product("Orange", "Fruit", 7, "Кг"));
+            repository.save(new Product("Apple", "Fruit", 7, "Кг"));
+        } catch (Exception ignored) {
+        }
         final Module<?> tableModule = new TableModule<Product>(repository, controller, tableView);
         tableModule.run();
     }

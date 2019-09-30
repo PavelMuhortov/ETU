@@ -12,6 +12,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -54,9 +55,9 @@ public class SwingTableView<M extends Model<M>>
         SearchPanel searchPanel = new SearchPanel(propertyNames, propertyDisplayNames);
         setSearchPanelListeners(searchPanel);
         add(searchPanel, BorderLayout.SOUTH);
-        String[] propertyDispNames = Stream.concat(Stream.of("Id"), propertyDisplayNames.stream())
+        String[] propertyDispNamesArray = Stream.concat(Stream.of("Id"), propertyDisplayNames.stream())
                 .toArray(String[]::new);
-        tableModel = new DefaultTableModel(propertyDispNames, 0) {
+        tableModel = new DefaultTableModel(propertyDispNamesArray, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return column != 0;
@@ -76,7 +77,30 @@ public class SwingTableView<M extends Model<M>>
      * @param searchPanel
      */
     private void setSearchPanelListeners(SearchPanel searchPanel) {
-        searchPanel.onFilter(filterOptions -> fillTable(dataSupplier.findBy(filterOptions.getProperty(), filterOptions.getValue())));
+        searchPanel.onFilter(filterOptions -> fillTable(readData(filterOptions)));
+    }
+
+    private Collection<M> readData(SearchPanel.FilterOptions filterOptions) {
+        try {
+            if (filterOptions != null) {
+                return dataSupplier.findBy(filterOptions.getProperty(), filterOptions.getValue());
+            } else {
+                return dataSupplier.getAll();
+            }
+        } catch (Exception e) {
+            showAlert("Невозможно загрузить данные", e);
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Выводит сообщение об ошибке
+     *
+     * @param message сообщение
+     * @param e       исклчение
+     */
+    private void showAlert(String message, Exception e) {
+        JOptionPane.showMessageDialog(this, message + ": " + e.getLocalizedMessage());
     }
 
     /**
@@ -110,7 +134,7 @@ public class SwingTableView<M extends Model<M>>
      * Заполняет отображение данными
      */
     private void fillTable() {
-        fillTable(dataSupplier.getAll());
+        fillTable(readData(null));
     }
 
     @Override
@@ -127,18 +151,22 @@ public class SwingTableView<M extends Model<M>>
      * сохраняет измененные данные
      */
     private void save() {
-        int rows = table.getModel().getRowCount();
-        for (int i = 0; i < rows; i++) {
-            long id = (long) tableModel.getValueAt(i, 0);
-            M model = controller.newOne();
-            model.setId(id);
-            for (int j = 0; j < propertyNames.size(); j++) {
-                String propertyName = propertyNames.get(j);
-                String valueAt = (String) tableModel.getValueAt(i, j + 1);
-                model.setPropertyValue(propertyName, valueAt);
+        try {
+            int rows = table.getModel().getRowCount();
+            for (int i = 0; i < rows; i++) {
+                long id = (long) tableModel.getValueAt(i, 0);
+                M model = controller.newOne();
+                model.setId(id);
+                for (int j = 0; j < propertyNames.size(); j++) {
+                    String propertyName = propertyNames.get(j);
+                    String valueAt = (String) tableModel.getValueAt(i, j + 1);
+                    model.setPropertyValue(propertyName, valueAt);
+                }
+                LOG.debug("Saving data {}", model.toString());
+                controller.save(model);
             }
-            LOG.debug("Saving data {}", model.toString());
-            controller.save(model);
+        } catch (Exception e) {
+            showAlert("Невозможно сохранить данные", e);
         }
     }
 

@@ -4,6 +4,7 @@ import com.example.market.core.model.Model;
 
 /**
  * Предоставляет CRUD методы к данным
+ *
  * @param <M>
  */
 public interface Repository<M extends Model<M>>
@@ -18,5 +19,10 @@ public interface Repository<M extends Model<M>>
      */
     void save(M model);
 
-    M find(long index);
+    default M find(long index) {
+        return getAll().stream()
+                .filter(model -> model.getId() == index)
+                .findFirst()
+                .orElse(null);
+    }
 }
