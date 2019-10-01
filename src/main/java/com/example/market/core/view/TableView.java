@@ -1,8 +1,7 @@
 package com.example.market.core.view;
 
-import com.example.market.core.controller.TableController;
-import com.example.market.core.data.DataSupplier;
 import com.example.market.core.model.Model;
+import com.example.market.core.viewmodel.TableViewModel;
 
 /**
  * Отображение данных в табличном виде
@@ -11,11 +10,10 @@ import com.example.market.core.model.Model;
 public interface TableView<M extends Model<M>> {
 
     /**
-     * Инициализация отображения. {@link DataSupplier} и {@link TableController} должны быть установлены
+     * Инициализация отображения. {@link TableViewModel} должен быть установлен
      */
     void init();
 
-    void setController(TableController<M> controller);
+    void setViewModel(TableViewModel<M> viewModel);
 
-    void setDataSupplier(DataSupplier<M> dataSupplier);
 }

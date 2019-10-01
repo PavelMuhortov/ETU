@@ -1,9 +1,8 @@
 package com.example.market.swingview.view;
 
-import com.example.market.core.controller.TableController;
-import com.example.market.core.data.DataSupplier;
 import com.example.market.core.model.Model;
 import com.example.market.core.view.TableView;
+import com.example.market.core.viewmodel.TableViewModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +28,7 @@ public class SwingTableView<M extends Model<M>>
 
     private List<String> propertyNames;
 
-    private TableController<M> controller;
-
-    private DataSupplier<M> dataSupplier;
+    private TableViewModel<M> viewModel;
 
     private DefaultTableModel tableModel;
 
@@ -43,7 +40,7 @@ public class SwingTableView<M extends Model<M>>
     @SuppressWarnings("deprecation")
     @Override
     public void init() {
-        M model = controller.newOne();
+        M model = viewModel.newOne();
         propertyNames = model.getPropertyNames();
         setLayout(new BorderLayout());
         TableToolbar toolBar = new TableToolbar();
@@ -82,9 +79,9 @@ public class SwingTableView<M extends Model<M>>
     private Collection<M> readData(SearchPanel.FilterOptions filterOptions) {
         try {
             if (filterOptions != null) {
-                return dataSupplier.findBy(filterOptions.getProperty(), filterOptions.getValue());
+                return viewModel.findBy(filterOptions.getProperty(), filterOptions.getValue());
             } else {
-                return dataSupplier.getAll();
+                return viewModel.getAll();
             }
         } catch (Exception e) {
             showAlert("Невозможно загрузить данные", e);
@@ -121,7 +118,7 @@ public class SwingTableView<M extends Model<M>>
 
     private void addElement() {
         LOG.debug("Add entry event received");
-        final M model = controller.newOne();
+        final M model = viewModel.newOne();
         addNewRow(model);
     }
 
@@ -131,7 +128,7 @@ public class SwingTableView<M extends Model<M>>
             long modelId = (long) tableModel.getValueAt(rows[i], 0);
             try {
                 LOG.debug("Remove element Id: {}", modelId);
-                controller.delete(modelId);
+                viewModel.delete(modelId);
             } catch (Exception ignore) {
             }
             tableModel.removeRow(rows[i] - i);
@@ -147,13 +144,8 @@ public class SwingTableView<M extends Model<M>>
     }
 
     @Override
-    public void setController(TableController<M> controller) {
-        this.controller = controller;
-    }
-
-    @Override
-    public void setDataSupplier(DataSupplier<M> dataSupplier) {
-        this.dataSupplier = dataSupplier;
+    public void setViewModel(TableViewModel<M> viewModel) {
+        this.viewModel = viewModel;
     }
 
     /**
@@ -164,7 +156,7 @@ public class SwingTableView<M extends Model<M>>
             int rows = table.getModel().getRowCount();
             for (int i = 0; i < rows; i++) {
                 long id = (long) tableModel.getValueAt(i, 0);
-                M model = controller.newOne();
+                M model = viewModel.newOne();
                 model.setId(id);
                 for (int j = 0; j < propertyNames.size(); j++) {
                     String propertyName = propertyNames.get(j);
@@ -172,7 +164,7 @@ public class SwingTableView<M extends Model<M>>
                     model.setPropertyValue(propertyName, valueAt);
                 }
                 LOG.debug("Saving data {}", model.toString());
-                controller.save(model);
+                viewModel.save(model);
             }
         } catch (Exception e) {
             showAlert("Невозможно сохранить данные", e);

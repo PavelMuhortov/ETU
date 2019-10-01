@@ -1,10 +1,10 @@
 package com.example.market.swingview;
 
-import com.example.market.core.controller.TableController;
 import com.example.market.core.data.Repository;
 import com.example.market.core.data.XmlRepository;
 import com.example.market.core.model.Model;
 import com.example.market.core.module.TableTableModule;
+import com.example.market.core.viewmodel.TableViewModel;
 import com.example.market.swingview.model.Employee;
 import com.example.market.swingview.model.Product;
 import com.example.market.swingview.model.Shop;
@@ -17,11 +17,12 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unchecked")
 public class Application {
 
     private final Class<? extends Model<?>>[] modelClasses;
 
-    public Application(Class<? extends Model<?>>... modelClasses) {
+    Application(Class<? extends Model<?>>... modelClasses) {
         this.modelClasses = modelClasses;
     }
 
@@ -40,7 +41,6 @@ public class Application {
         frame.setVisible(true);
     }
 
-    @SuppressWarnings("unchecked")
     private void addTabs(JTabbedPane tabs, Class<? extends Model<?>>[] modelClasses) {
         Arrays.stream(modelClasses)
                 .forEach(modelClass -> {
@@ -58,18 +58,16 @@ public class Application {
         }
     }
 
-    private <M extends Model<M>> void addTab(JTabbedPane tabs, TableTableModule<M, SwingTableView<M>, TableController<M>, Repository<M>> module) {
+    private <M extends Model<M>> void addTab(JTabbedPane tabs, TableTableModule<M, SwingTableView<M>, TableViewModel<M>, Repository<M>> module) {
         tabs.addTab(module.getModel().getDisplayName(), module.getView());
     }
 
-    private <T extends Model<T>> TableTableModule<T, SwingTableView<T>, TableController<T>, Repository<T>> createTableModule(Supplier<T> modelFactory) {
-        final var fileName = modelFactory.get().getName() + ".xml";
+    private <T extends Model<T>> TableTableModule<T, SwingTableView<T>, TableViewModel<T>, Repository<T>> createTableModule(Supplier<T> modelFactory) {
+        final var fileName = modelFactory.get().getName().toLowerCase() + ".xml";
         final SwingTableView<T> tableView = new SwingTableView<>();
-        final TableController<T> controller = TableController.newInstance(modelFactory);
+        final TableViewModel<T> viewModel = TableViewModel.newInstance(modelFactory);
         final Repository<T> repository = new XmlRepository<>(Path.of(fileName).toFile(), modelFactory);
-        TableTableModule<T, SwingTableView<T>, TableController<T>, Repository<T>> tableModule = new TableTableModule<>(repository, controller, tableView);
-        tableModule.initialize();
-        return tableModule;
+        return new TableTableModule<>(repository, viewModel, tableView);
     }
 
 }
