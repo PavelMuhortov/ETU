@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -111,9 +110,9 @@ public class SwingTableView<M extends Model<M>>
     private void setToolbarListeners(TableToolbar toolBar) {
         toolBar.onDelete(() -> {
             final int[] rows = table.getSelectedRows();
-            LOG.debug("Selected rows: {}", Arrays.toString(rows));
             for (int i = 0; i < rows.length; i++) {
-                long modelId = (long) tableModel.getValueAt(i, 0);
+                long modelId = (long) tableModel.getValueAt(rows[i], 0);
+                LOG.debug("Remove element Id: {}", modelId);
                 controller.delete(modelId);
                 tableModel.removeRow(rows[i] - i);
             }

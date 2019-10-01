@@ -1,8 +1,8 @@
 package com.example.market.swingview;
 
 import com.example.market.core.controller.TableController;
-import com.example.market.core.data.FileRepository;
 import com.example.market.core.data.Repository;
+import com.example.market.core.data.XmlRepository;
 import com.example.market.core.module.Module;
 import com.example.market.core.module.TableModule;
 import com.example.market.swingview.model.Product;
@@ -27,10 +27,10 @@ public class Application {
 
     private static void createProductTableModule(SwingTableView<Product> tableView) {
         final TableController<Product> controller = TableController.newInstance(Product.class);
-        final Repository<Product> repository = new FileRepository<>(Path.of("temp.txt"), Product::new);
+        final Repository<Product> repository = new XmlRepository<>(Path.of("temp.xml").toFile(), Product::new);
         try {
-            repository.save(new Product("Orange", "Fruit", 7, "Кг"));
-            repository.save(new Product("Apple", "Fruit", 7, "Кг"));
+//            repository.save(new Product("Orange", "Fruit", 7, "Кг"));
+//            repository.save(new Product("Apple", "Fruit", 7, "Кг"));
         } catch (Exception ignored) {
         }
         final Module<?> tableModule = new TableModule<Product>(repository, controller, tableView);
