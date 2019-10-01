@@ -11,10 +11,11 @@ import java.util.function.Consumer;
  */
 public class SearchPanel extends JPanel {
 
-    public static final String DEFAULT_TEXT = "Enter text     ";
+    public static final String DEFAULT_TEXT = "Enter text";
     private final JComboBox<String> filterProperty;
     private final JTextField filterValue;
     private final JButton search;
+    private final JButton reset;
     private final List<String> propertyNames;
     private final List<String> propertyDisplayNames;
 
@@ -22,7 +23,7 @@ public class SearchPanel extends JPanel {
         this.propertyNames = propertyNames;
         this.propertyDisplayNames = propertyDisplayNames;
         filterProperty = new JComboBox<>(propertyDisplayNames.toArray(new String[0]));
-        filterValue = new JTextField(DEFAULT_TEXT);
+        filterValue = new JTextField(DEFAULT_TEXT, 20);
         filterValue.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent focusEvent) {
@@ -37,9 +38,11 @@ public class SearchPanel extends JPanel {
             }
         });
         search = new JButton("Search");
+        reset = new JButton("Reset");
         add(filterProperty);
         add(filterValue);
         add(search);
+        add(reset);
     }
 
     /**
@@ -53,6 +56,13 @@ public class SearchPanel extends JPanel {
             String propertyName = propertyNames.get(index);
             String value = filterValue.getText();
             consumer.accept(new FilterOptions(propertyName, value));
+        });
+    }
+
+    public void onReset(Runnable listener) {
+        reset.addActionListener(e -> {
+            filterValue.setText(DEFAULT_TEXT);
+            listener.run();
         });
     }
 

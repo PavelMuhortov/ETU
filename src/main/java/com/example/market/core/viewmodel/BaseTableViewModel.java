@@ -2,8 +2,8 @@ package com.example.market.core.viewmodel;
 
 import com.example.market.core.data.Repository;
 import com.example.market.core.model.Model;
+import com.example.market.core.view.TableView;
 
-import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -15,20 +15,20 @@ public abstract class BaseTableViewModel<M extends Model<M>>
         implements TableViewModel<M> {
 
     private Repository<M> repository;
+    private TableView<M> view;
+
+    private String property;
+    private String value;
 
     @Override
     public void delete(long index) {
         getRepository().delete(index);
+        showData();
     }
 
     @Override
     public void save(M model) {
         getRepository().save(model);
-    }
-
-    @Override
-    public M find(long id) {
-        return getRepository().find(id);
     }
 
     protected Repository<M> getRepository() {
@@ -41,12 +41,38 @@ public abstract class BaseTableViewModel<M extends Model<M>>
     }
 
     @Override
-    public Collection<M> findBy(String property, String value) {
-        return repository.findBy(property, value);
+    public void setView(TableView<M> view) {
+        this.view = view;
     }
 
     @Override
-    public Collection<M> getAll() {
-        return repository.getAll();
+    public void search(String property, String value) {
+        this.property = property;
+        this.value = value;
+        showData();
+    }
+
+    @Override
+    public void reset() {
+        this.property = null;
+        this.value = null;
+        showData();
+    }
+
+    @Override
+    public void refresh() {
+        showData();
+    }
+
+    private void showData() {
+        try {
+            if (null != this.property && null != this.value) {
+                view.showData(getRepository().findBy(property, value));
+            } else {
+                view.showData(getRepository().getAll());
+            }
+        } catch (Exception e) {
+            view.alert("Невозможно загрузить данные." + e.getLocalizedMessage());
+        }
     }
 }

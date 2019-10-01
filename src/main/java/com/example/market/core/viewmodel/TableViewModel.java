@@ -2,8 +2,8 @@ package com.example.market.core.viewmodel;
 
 import com.example.market.core.data.Repository;
 import com.example.market.core.model.Model;
+import com.example.market.core.view.TableView;
 
-import java.util.Collection;
 import java.util.function.Supplier;
 
 /**
@@ -26,13 +26,16 @@ public interface TableViewModel<M extends Model<M>> {
 
     void save(M model);
 
-    M find(long id);
-
     M newOne();
 
     void setRepository(Repository<M> repository);
 
-    Collection<M> findBy(String property, String value);
+    void setView(TableView<M> view);
 
-    Collection<M> getAll();
+    void search(String property, String value);
+
+    void reset();
+
+    void refresh();
+
 }

@@ -10,7 +10,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,7 +36,6 @@ public class SwingTableView<M extends Model<M>>
     /**
      * Инициализирует компоненты отображения
      */
-    @SuppressWarnings("deprecation")
     @Override
     public void init() {
         M model = viewModel.newOne();
@@ -65,7 +63,12 @@ public class SwingTableView<M extends Model<M>>
         Box contents = new Box(BoxLayout.Y_AXIS);
         add(contents, BorderLayout.CENTER);
         contents.add(new JScrollPane(table));
-        fillTable();
+        viewModel.refresh();
+    }
+
+    @Override
+    public void showData(Collection<M> data) {
+        SwingUtilities.invokeLater(() -> fillTable(data));
     }
 
     /**
@@ -74,30 +77,18 @@ public class SwingTableView<M extends Model<M>>
      * @param searchPanel
      */
     private void setSearchPanelListeners(SearchPanel searchPanel) {
-        searchPanel.onFilter(filterOptions -> fillTable(readData(filterOptions)));
-    }
-
-    private Collection<M> readData(SearchPanel.FilterOptions filterOptions) {
-        try {
-            if (filterOptions != null) {
-                return viewModel.findBy(filterOptions.getProperty(), filterOptions.getValue());
-            } else {
-                return viewModel.getAll();
-            }
-        } catch (Exception e) {
-            showAlert("Невозможно загрузить данные", e);
-            return Collections.emptyList();
-        }
+        searchPanel.onFilter(filterOptions -> viewModel.search(filterOptions.getProperty(), filterOptions.getValue()));
+        searchPanel.onReset(() -> viewModel.reset());
     }
 
     /**
      * Выводит сообщение об ошибке
      *
-     * @param message сообщение
-     * @param e       исклчение
+     * @param alert сообщение
      */
-    private void showAlert(String message, Exception e) {
-        JOptionPane.showMessageDialog(this, message + ": " + e.getLocalizedMessage());
+    @Override
+    public void alert(String alert) {
+        JOptionPane.showMessageDialog(this, alert);
     }
 
     /**
@@ -109,12 +100,11 @@ public class SwingTableView<M extends Model<M>>
         toolBar.onDelete(this::deleteElements)
                 .onAdd(this::addElement)
                 .onSave(this::saveData)
-                .onRefresh(this::fillTable);
+                .onRefresh(viewModel::refresh);
     }
 
     private void saveData() {
         save();
-        fillTable();
     }
 
     private void addElement() {
@@ -124,24 +114,11 @@ public class SwingTableView<M extends Model<M>>
     }
 
     private void deleteElements() {
-        final int[] rows = table.getSelectedRows();
-        for (int i = 0; i < rows.length; i++) {
-            long modelId = (long) tableModel.getValueAt(rows[i], 0);
-            try {
-                LOG.debug("Remove element Id: {}", modelId);
-                viewModel.delete(modelId);
-            } catch (Exception ignore) {
-            }
-            tableModel.removeRow(rows[i] - i);
-
-        }
-    }
-
-    /**
-     * Заполняет отображение данными
-     */
-    private void fillTable() {
-        fillTable(readData(null));
+        final int row = table.getSelectedRow();
+        long modelId = (long) tableModel.getValueAt(row, 0);
+        LOG.debug("Remove element Id: {}", modelId);
+        viewModel.delete(modelId);
+        tableModel.removeRow(row);
     }
 
     @Override
@@ -153,22 +130,18 @@ public class SwingTableView<M extends Model<M>>
      * сохраняет измененные данные
      */
     private void save() {
-        try {
-            int rows = table.getModel().getRowCount();
-            for (int i = 0; i < rows; i++) {
-                long id = (long) tableModel.getValueAt(i, 0);
-                M model = viewModel.newOne();
-                model.setId(id);
-                for (int j = 0; j < propertyNames.size(); j++) {
-                    String propertyName = propertyNames.get(j);
-                    String valueAt = (String) tableModel.getValueAt(i, j + 1);
-                    model.setPropertyValue(propertyName, valueAt);
-                }
-                LOG.debug("Saving data {}", model.toString());
-                viewModel.save(model);
+        int rows = table.getModel().getRowCount();
+        for (int i = 0; i < rows; i++) {
+            long id = (long) tableModel.getValueAt(i, 0);
+            M model = viewModel.newOne();
+            model.setId(id);
+            for (int j = 0; j < propertyNames.size(); j++) {
+                String propertyName = propertyNames.get(j);
+                String valueAt = (String) tableModel.getValueAt(i, j + 1);
+                model.setPropertyValue(propertyName, valueAt);
             }
-        } catch (Exception e) {
-            showAlert("Невозможно сохранить данные", e);
+            LOG.debug("Saving data {}", model.toString());
+            viewModel.save(model);
         }
     }
 

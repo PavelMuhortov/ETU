@@ -22,6 +22,7 @@ public class TableTableModule<M extends Model<M>, V extends TableView<M>, VM ext
         this.viewModel = viewModel;
         this.view = view;
         this.view.setViewModel(this.viewModel);
+        viewModel.setView(view);
         view.init();
     }
 
