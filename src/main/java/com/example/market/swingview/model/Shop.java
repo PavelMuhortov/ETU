@@ -9,9 +9,12 @@ public class Shop extends BaseModel<Shop> {
     @Named("Название")
     private String name;
 
-    @Named("Адрес")
-    private String address;
+    @Named("Специализация")
+    private String specialization;
 
     @Named("Директор")
     private String ceo;
+
+    @Named("Адрес")
+    private String address;
 }

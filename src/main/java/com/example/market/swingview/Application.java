@@ -27,7 +27,7 @@ public class Application {
     }
 
     public static void main(String[] args) {
-        new Application(Employee.class, Product.class, Shop.class).run();
+        new Application(Shop.class, Employee.class, Product.class).run();
     }
 
     private void run() {

@@ -15,9 +15,6 @@ public class Employee extends BaseModel<Employee> {
     @Named("Отчество")
     private String middleName;
 
-    @Named("Подразделение")
-    private String department;
-
     @Named("Возраст")
     private int age;
 }

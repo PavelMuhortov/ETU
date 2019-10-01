@@ -60,6 +60,7 @@ public class SwingTableView<M extends Model<M>>
             }
         };
         table = new JTable(tableModel);
+        table.removeColumn(table.getColumnModel().getColumn(0));
         setToolbarListeners(toolBar);
         Box contents = new Box(BoxLayout.Y_AXIS);
         add(contents, BorderLayout.CENTER);
