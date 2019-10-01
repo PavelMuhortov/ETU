@@ -3,38 +3,73 @@ package com.example.market.swingview;
 import com.example.market.core.controller.TableController;
 import com.example.market.core.data.Repository;
 import com.example.market.core.data.XmlRepository;
-import com.example.market.core.module.Module;
-import com.example.market.core.module.TableModule;
+import com.example.market.core.model.Model;
+import com.example.market.core.module.TableTableModule;
+import com.example.market.swingview.model.Employee;
 import com.example.market.swingview.model.Product;
+import com.example.market.swingview.model.Shop;
 import com.example.market.swingview.view.SwingTableView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.function.Supplier;
 
 public class Application {
 
+    private final Class<? extends Model<?>>[] modelClasses;
+
+    public Application(Class<? extends Model<?>>... modelClasses) {
+        this.modelClasses = modelClasses;
+    }
+
     public static void main(String[] args) {
+        new Application(Employee.class, Product.class, Shop.class).run();
+    }
+
+    private void run() {
         final JFrame frame = new JFrame("My app");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        final SwingTableView<Product> tableView = new SwingTableView<>();
-        frame.add(tableView);
-        frame.setSize(new Dimension(500, 500));
+        JTabbedPane tabs = new JTabbedPane();
+        addTabs(tabs, modelClasses);
+        frame.add(tabs);
+        frame.setSize(new Dimension(700, 500));
         frame.setLocation(200, 100);
-        createProductTableModule(tableView);
         frame.setVisible(true);
     }
 
-    private static void createProductTableModule(SwingTableView<Product> tableView) {
-        final TableController<Product> controller = TableController.newInstance(Product.class);
-        final Repository<Product> repository = new XmlRepository<>(Path.of("temp.xml").toFile(), Product::new);
+    @SuppressWarnings("unchecked")
+    private void addTabs(JTabbedPane tabs, Class<? extends Model<?>>[] modelClasses) {
+        Arrays.stream(modelClasses)
+                .forEach(modelClass -> {
+                    Supplier<Model> modelFactory = () -> newInstance(modelClass);
+                    final var tableModule = createTableModule(modelFactory);
+                    addTab(tabs, tableModule);
+                });
+    }
+
+    private Model<?> newInstance(Class<? extends Model<?>> modelClass) {
         try {
-//            repository.save(new Product("Orange", "Fruit", 7, "Кг"));
-//            repository.save(new Product("Apple", "Fruit", 7, "Кг"));
-        } catch (Exception ignored) {
+            return modelClass.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new IllegalStateException("Can't instantiate " + modelClass.getName());
         }
-        final Module<?> tableModule = new TableModule<Product>(repository, controller, tableView);
-        tableModule.run();
+    }
+
+    private <M extends Model<M>> void addTab(JTabbedPane tabs, TableTableModule<M, SwingTableView<M>, TableController<M>, Repository<M>> module) {
+        tabs.addTab(module.getModel().getDisplayName(), module.getView());
+    }
+
+    private <T extends Model<T>> TableTableModule<T, SwingTableView<T>, TableController<T>, Repository<T>> createTableModule(Supplier<T> modelFactory) {
+        final var fileName = modelFactory.get().getName() + ".xml";
+        final SwingTableView<T> tableView = new SwingTableView<>();
+        final TableController<T> controller = TableController.newInstance(modelFactory);
+        final Repository<T> repository = new XmlRepository<>(Path.of(fileName).toFile(), modelFactory);
+        TableTableModule<T, SwingTableView<T>, TableController<T>, Repository<T>> tableModule = new TableTableModule<>(repository, controller, tableView);
+        tableModule.initialize();
+        return tableModule;
     }
 
 }

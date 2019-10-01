@@ -6,6 +6,7 @@ import com.example.market.core.model.Named;
 /**
  * Пример реализации модели данных
  */
+@Named("Продукт")
 public class Product
         extends BaseModel<Product> {
 
@@ -21,14 +22,7 @@ public class Product
     @Named("Ед. изм.")
     private String units;
 
-    public Product(String name, String description, int amount, String units) {
-        this.name = name;
-        this.description = description;
-        this.amount = amount;
-        this.units = units;
-    }
-
-    public Product() {
-    }
+    @Named("Цена")
+    private int price;
 
 }

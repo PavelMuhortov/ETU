@@ -42,7 +42,7 @@ public class SwingTableView<M extends Model<M>>
      */
     @SuppressWarnings("deprecation")
     @Override
-    public void show() {
+    public void init() {
         M model = controller.newOne();
         propertyNames = model.getPropertyNames();
         setLayout(new BorderLayout());
@@ -108,25 +108,35 @@ public class SwingTableView<M extends Model<M>>
      * @param toolBar
      */
     private void setToolbarListeners(TableToolbar toolBar) {
-        toolBar.onDelete(() -> {
-            final int[] rows = table.getSelectedRows();
-            for (int i = 0; i < rows.length; i++) {
-                long modelId = (long) tableModel.getValueAt(rows[i], 0);
+        toolBar.onDelete(this::deleteElements)
+                .onAdd(this::addElement)
+                .onSave(this::saveData)
+                .onRefresh(this::fillTable);
+    }
+
+    private void saveData() {
+        save();
+        fillTable();
+    }
+
+    private void addElement() {
+        LOG.debug("Add entry event received");
+        final M model = controller.newOne();
+        addNewRow(model);
+    }
+
+    private void deleteElements() {
+        final int[] rows = table.getSelectedRows();
+        for (int i = 0; i < rows.length; i++) {
+            long modelId = (long) tableModel.getValueAt(rows[i], 0);
+            try {
                 LOG.debug("Remove element Id: {}", modelId);
                 controller.delete(modelId);
-                tableModel.removeRow(rows[i] - i);
+            } catch (Exception ignore) {
             }
-        })
-                .onAdd(() -> {
-                    LOG.debug("Add entry event received");
-                    final M model = controller.newOne();
-                    addNewRow(model);
-                })
-                .onSave(() -> {
-                    save();
-                    fillTable();
-                })
-                .onRefresh(this::fillTable);
+            tableModel.removeRow(rows[i] - i);
+
+        }
     }
 
     /**

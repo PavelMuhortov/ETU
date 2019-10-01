@@ -18,6 +18,10 @@ public interface Model<M> {
      */
     void setId(long id);
 
+    String getName();
+
+    String getDisplayName();
+
     /**
      * @return Список имен полей модели
      */

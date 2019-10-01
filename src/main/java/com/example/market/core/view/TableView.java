@@ -13,7 +13,7 @@ public interface TableView<M extends Model<M>> {
     /**
      * Инициализация отображения. {@link DataSupplier} и {@link TableController} должны быть установлены
      */
-    void show();
+    void init();
 
     void setController(TableController<M> controller);
 

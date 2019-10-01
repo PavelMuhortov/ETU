@@ -51,6 +51,20 @@ public class BaseModel<M extends Model>
     }
 
     @Override
+    public String getName() {
+        return getClass().getSimpleName();
+    }
+
+    @Override
+    public String getDisplayName() {
+        Named annotation = getClass().getAnnotation(Named.class);
+        if (annotation != null)
+            return annotation.value();
+        else
+            return getName();
+    }
+
+    @Override
     public List<String> getPropertyNames() {
         return propertyNames;
     }

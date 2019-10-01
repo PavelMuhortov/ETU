@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * Предоставляет возможность указать имя поля для отображения
  * {@link BaseModel.PropDef#propertyDisplayedName}
  */
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Named {
 
