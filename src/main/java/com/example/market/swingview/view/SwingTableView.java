@@ -115,10 +115,12 @@ public class SwingTableView<M extends Model<M>>
 
     private void deleteElements() {
         final int row = table.getSelectedRow();
-        long modelId = (long) tableModel.getValueAt(row, 0);
-        LOG.debug("Remove element Id: {}", modelId);
-        viewModel.delete(modelId);
-        tableModel.removeRow(row);
+        if (row >= 0) {
+            long modelId = (long) tableModel.getValueAt(row, 0);
+            LOG.debug("Remove element Id: {}", modelId);
+            viewModel.delete(modelId);
+            tableModel.removeRow(row);
+        }
     }
 
     @Override
