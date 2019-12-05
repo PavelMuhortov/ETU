@@ -5,9 +5,7 @@ import com.example.market.core.data.XmlRepository;
 import com.example.market.core.model.Model;
 import com.example.market.core.module.TableTableModule;
 import com.example.market.core.viewmodel.TableViewModel;
-import com.example.market.swingview.model.Employee;
-import com.example.market.swingview.model.Product;
-import com.example.market.swingview.model.Shop;
+import com.example.market.swingview.model.Stamp;
 import com.example.market.swingview.view.SwingTableView;
 
 import javax.swing.*;
@@ -27,7 +25,7 @@ public class Application {
     }
 
     public static void main(String[] args) {
-        new Application(Shop.class, Employee.class, Product.class).run();
+        new Application(Stamp.class).run();
     }
 
     private void run() {

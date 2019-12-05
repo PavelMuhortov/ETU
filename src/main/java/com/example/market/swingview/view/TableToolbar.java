@@ -13,6 +13,7 @@ import java.util.Objects;
 public class TableToolbar
         extends JToolBar {
 
+    public static final String TOTAL_ENTRIES = "Всего записей: ";
     /**
      * Кнопка "Добавить". Добавляет новую строку.
      */
@@ -33,15 +34,19 @@ public class TableToolbar
      */
     private JButton refresh;
 
+    private JLabel totalEntries;
+
     public TableToolbar() {
         add = createButton("png/add-2.png", "Добавить");
         delete = createButton("png/multiply-1.png", "Удалить");
         save = createButton("png/folder-16.png", "Сохранить");
         refresh = createButton("png/folder-15.png", "обновить");
+        totalEntries = new JLabel(TOTAL_ENTRIES);
         add(add);
         add(delete);
         add(save);
         add(refresh);
+        add(totalEntries);
     }
 
     private JButton createButton(String path, String text) {
@@ -109,6 +114,12 @@ public class TableToolbar
     public TableToolbar onRefresh(Runnable buttonListener) {
         refresh.addActionListener(e -> buttonListener.run());
         return this;
+    }
+
+    public void setTotalEntries(long value) {
+        SwingUtilities.invokeLater(() -> {
+            totalEntries.setText(TOTAL_ENTRIES + value);
+        });
     }
 
 }
