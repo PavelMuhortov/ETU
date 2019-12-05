@@ -45,6 +45,7 @@ public class XmlRepository<M extends Model<M>> implements Repository<M> {
     }
 
     private List<Node> getData() {
+        initDocument();
         NodeList elementsByTagName = document.getElementsByTagName(getTagName());
         List<Node> result = new ArrayList<>(elementsByTagName.getLength());
         for (int i = 0; i < elementsByTagName.getLength(); i++) {

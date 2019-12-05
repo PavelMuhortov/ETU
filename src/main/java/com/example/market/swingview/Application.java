@@ -61,10 +61,11 @@ public class Application {
     }
 
     private <T extends Model<T>> TableTableModule<T, SwingTableView<T>, TableViewModel<T>, Repository<T>> createTableModule(Supplier<T> modelFactory) {
-        final var fileName = modelFactory.get().getName().toLowerCase() + ".xml";
+        final var fileName = modelFactory.get().getName().toLowerCase();
+        final Repository<T> repository = new XmlRepository<>(Path.of(fileName + ".xml").toFile(), modelFactory);
+//        final Repository<T> repository = new FileRepository<>(Path.of(fileName + ".csv").toFile(), modelFactory);
         final SwingTableView<T> tableView = new SwingTableView<>();
         final TableViewModel<T> viewModel = TableViewModel.newInstance(modelFactory);
-        final Repository<T> repository = new XmlRepository<>(Path.of(fileName).toFile(), modelFactory);
         return new TableTableModule<>(repository, viewModel, tableView);
     }
 

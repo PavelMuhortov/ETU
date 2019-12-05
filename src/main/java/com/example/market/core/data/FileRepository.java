@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.Collection;
@@ -24,18 +25,30 @@ public class FileRepository<M extends Model<M>> implements Repository<M> {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileRepository.class);
     private final File file;
     private final Supplier<M> modelFactory;
-    private final Map<Long, M> data;
+    private Map<Long, M> data;
     private final AtomicLong indexGenerator;
 
     public FileRepository(File file, Supplier<M> modelFactory) {
         this.file = file;
         this.modelFactory = modelFactory;
-        data = readFile().stream()
-                .collect(toMap(M::getId, m -> m));
+        if (!Files.exists(file.toPath())) {
+            try {
+                Files.createFile(file.toPath());
+            } catch (IOException e) {
+                LOGGER.error("Can't create file [{}]", file, e);
+                throw new RuntimeException("Can't create file", e);
+            }
+        }
+        initData();
         long maxIndex = data.keySet().stream()
                 .mapToLong(l -> l)
                 .max().orElse(0);
         indexGenerator = new AtomicLong(maxIndex);
+    }
+
+    private void initData() {
+        data = readFile().stream()
+                .collect(toMap(M::getId, m -> m));
     }
 
 
@@ -61,6 +74,7 @@ public class FileRepository<M extends Model<M>> implements Repository<M> {
 
     @Override
     public Collection<M> getAll() {
+        initData();
         return data.values();
     }
 
