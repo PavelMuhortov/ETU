@@ -5,9 +5,7 @@ import com.example.market.core.data.XmlRepository;
 import com.example.market.core.model.Model;
 import com.example.market.core.module.TableTableModule;
 import com.example.market.core.viewmodel.TableViewModel;
-import com.example.market.swingview.model.Employee;
-import com.example.market.swingview.model.Product;
-import com.example.market.swingview.model.Shop;
+import com.example.market.swingview.model.Stamp;
 import com.example.market.swingview.view.SwingTableView;
 
 import javax.swing.*;
@@ -27,7 +25,7 @@ public class Application {
     }
 
     public static void main(String[] args) {
-        new Application(Shop.class, Employee.class, Product.class).run();
+        new Application(Stamp.class).run();
     }
 
     private void run() {
@@ -63,10 +61,11 @@ public class Application {
     }
 
     private <T extends Model<T>> TableTableModule<T, SwingTableView<T>, TableViewModel<T>, Repository<T>> createTableModule(Supplier<T> modelFactory) {
-        final var fileName = modelFactory.get().getName().toLowerCase() + ".xml";
+        final var fileName = modelFactory.get().getName().toLowerCase();
+        final Repository<T> repository = new XmlRepository<>(Path.of(fileName + ".xml").toFile(), modelFactory);
+//        final Repository<T> repository = new FileRepository<>(Path.of(fileName + ".csv").toFile(), modelFactory);
         final SwingTableView<T> tableView = new SwingTableView<>();
         final TableViewModel<T> viewModel = TableViewModel.newInstance(modelFactory);
-        final Repository<T> repository = new XmlRepository<>(Path.of(fileName).toFile(), modelFactory);
         return new TableTableModule<>(repository, viewModel, tableView);
     }
 

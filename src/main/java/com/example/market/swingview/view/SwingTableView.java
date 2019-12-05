@@ -32,6 +32,7 @@ public class SwingTableView<M extends Model<M>>
     private DefaultTableModel tableModel;
 
     private JTable table;
+    private TableToolbar toolBar;
 
     /**
      * Инициализирует компоненты отображения
@@ -41,7 +42,7 @@ public class SwingTableView<M extends Model<M>>
         M model = viewModel.newOne();
         propertyNames = model.getPropertyNames();
         setLayout(new BorderLayout());
-        TableToolbar toolBar = new TableToolbar();
+        toolBar = new TableToolbar();
         add(toolBar, BorderLayout.NORTH);
         List<String> propertyDisplayNames = propertyNames.stream()
                 .map(model::getDisplayName)
@@ -156,6 +157,7 @@ public class SwingTableView<M extends Model<M>>
         tableModel.getDataVector().removeAllElements();
         tableModel.fireTableDataChanged();
         data.forEach(this::addNewRow);
+        toolBar.setTotalEntries(tableModel.getRowCount());
     }
 
     /**
@@ -168,6 +170,7 @@ public class SwingTableView<M extends Model<M>>
                 .map(model::getPropertyValue))
                 .toArray();
         tableModel.addRow(values);
+        toolBar.setTotalEntries(tableModel.getRowCount());
     }
 
 }

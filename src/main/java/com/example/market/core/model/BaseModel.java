@@ -3,6 +3,7 @@ package com.example.market.core.model;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -81,7 +82,9 @@ public class BaseModel<M extends Model>
         try {
             field = getClass().getDeclaredField(propertyName);
             field.setAccessible(true);
-            return String.valueOf(field.get(this));
+            return Optional.ofNullable(field.get(this))
+                    .map(String::valueOf)
+                    .orElse("");
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new IllegalArgumentException("Can't read property: " + propertyName);
         } finally {
