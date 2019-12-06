@@ -3,7 +3,9 @@ package com.example.market.core.viewmodel;
 import com.example.market.core.data.Repository;
 import com.example.market.core.model.Model;
 import com.example.market.core.view.TableView;
+import com.example.market.tools.JasperExportHelper;
 
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -64,15 +66,34 @@ public abstract class BaseTableViewModel<M extends Model<M>>
         showData();
     }
 
+    @Override
+    public void export(String fileName, String fileType) {
+        try {
+            String file = fileName;
+            if (!fileName.endsWith(fileType)) {
+                file = fileName + "." + fileType;
+            }
+            new JasperExportHelper<M>()
+                    .export(file, this::getData)
+                    .get();
+        } catch (Exception e) {
+            view.alert("Невозможно экспортировать данные. " + e.getLocalizedMessage());
+        }
+    }
+
     private void showData() {
         try {
-            if (null != this.property && null != this.value) {
-                view.showData(getRepository().findBy(property, value));
-            } else {
-                view.showData(getRepository().getAll());
-            }
+            view.showData(getData());
         } catch (Exception e) {
             view.alert("Невозможно загрузить данные." + e.getLocalizedMessage());
+        }
+    }
+
+    private Collection<M> getData() {
+        if (null != this.property && null != this.value) {
+            return getRepository().findBy(property, value);
+        } else {
+            return getRepository().getAll();
         }
     }
 }

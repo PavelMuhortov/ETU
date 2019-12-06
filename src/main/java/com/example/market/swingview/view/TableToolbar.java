@@ -34,18 +34,26 @@ public class TableToolbar
      */
     private JButton refresh;
 
+    private JButton exportPdf;
+
+    private JButton exportHtml;
+
     private JLabel totalEntries;
 
     public TableToolbar() {
-        add = createButton("png/add-2.png", "Добавить");
-        delete = createButton("png/multiply-1.png", "Удалить");
-        save = createButton("png/folder-16.png", "Сохранить");
-        refresh = createButton("png/folder-15.png", "обновить");
+        add = createButton("png/new.png", "Добавить");
+        delete = createButton("png/delete.png", "Удалить");
+        save = createButton("png/save-file.png", "Сохранить");
+        refresh = createButton("png/refresh.png", "обновить");
+        exportPdf = createButton("png/pdf.png", "Экспорт в PDF");
+        exportHtml = createButton("png/html.png", "Экспорт в HTML");
         totalEntries = new JLabel(TOTAL_ENTRIES);
         add(add);
         add(delete);
         add(save);
         add(refresh);
+        add(exportPdf);
+        add(exportHtml);
         add(totalEntries);
     }
 
@@ -53,7 +61,7 @@ public class TableToolbar
         try {
             InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream(path);
             BufferedImage image = ImageIO.read(Objects.requireNonNull(resourceAsStream));
-            image = resizeImg(image, 30, 30);
+            image = resizeImg(image, 50, 50);
             JButton button = new JButton(new ImageIcon(image));
             button.setToolTipText(text);
             button.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
@@ -113,6 +121,16 @@ public class TableToolbar
      */
     public TableToolbar onRefresh(Runnable buttonListener) {
         refresh.addActionListener(e -> buttonListener.run());
+        return this;
+    }
+
+    public TableToolbar onExportPdf(Runnable buttonListener) {
+        exportPdf.addActionListener(e -> buttonListener.run());
+        return this;
+    }
+
+    public TableToolbar onExportHtml(Runnable buttonListener) {
+        exportHtml.addActionListener(e -> buttonListener.run());
         return this;
     }
 

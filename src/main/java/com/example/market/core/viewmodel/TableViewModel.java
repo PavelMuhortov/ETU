@@ -38,4 +38,6 @@ public interface TableViewModel<M extends Model<M>> {
 
     void refresh();
 
+    void export(String fileName, String fileType);
+
 }

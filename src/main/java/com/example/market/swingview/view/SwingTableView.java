@@ -101,7 +101,27 @@ public class SwingTableView<M extends Model<M>>
         toolBar.onDelete(this::deleteElements)
                 .onAdd(this::addElement)
                 .onSave(this::saveData)
-                .onRefresh(this::refresh);
+                .onRefresh(this::refresh)
+                .onExportPdf(this::exportPdf)
+                .onExportHtml(this::exportHtml);
+    }
+
+    private void exportPdf() {
+        try {
+            String filePath = new FileDialogWindow("Экспорт", FileDialogWindow.Mode.SAVE).getFilePath();
+            viewModel.export(filePath, "pdf");
+        } catch (Exception e) {
+            alert(e.getMessage());
+        }
+    }
+
+    private void exportHtml() {
+        try {
+            String filePath = new FileDialogWindow("Экспорт", FileDialogWindow.Mode.SAVE).getFilePath();
+            viewModel.export(filePath, "html");
+        } catch (Exception e) {
+            alert(e.getMessage());
+        }
     }
 
     private void refresh() {

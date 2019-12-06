@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xmlns="http://jasperreports.sourceforge.net/jasperreports"
+			  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+			  name="report"
+			  pageWidth="850"
+			  whenNoDataType="AllSectionsNoDetail"
+			  topMargin="20"
+			  bottomMargin="20"
+			  uuid="a1c98cb5-3ee2-498e-9ec8-37ebd0933547">
+	<property name="ireport.zoom" value="0.8"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="DATE"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+
+	<field name="stampName"/>
+	<field name="collectionName"/>
+	<field name="country"/>
+	<field name="position"/>
+
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="72">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="-20" width="850" height="92" backcolor="#006699"
+							   uuid="6cef0245-23ab-44b2-a315-f028a551b90b"/>
+				<staticText>
+					<reportElement x="0" y="13" width="850" height="43" forecolor="#FFFFFF"
+								   uuid="884ea339-e281-4a57-a4b5-4ee4c60c9951"/>
+					<textElement textAlignment="Center">
+						<font fontName="Liberation Mono" size="34" isBold="true" pdfFontName="Helvetica"
+							  pdfEncoding="Cp1251" isPdfEmbedded="true"/>
+					</textElement>
+					<text><![CDATA[Отчет]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="0" y="65" width="850" height="20" forecolor="#FFFFFF"
+								   uuid="a18369de-8fbf-4026-998e-ba19fafe233e"/>
+					<textElement textAlignment="Left">
+						<font fontName="Liberation Mono" size="14" isBold="false" pdfEncoding="Cp1251"
+							  isPdfEmbedded="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{DATE}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="38">
+			<line>
+				<reportElement x="0" y="36" width="850" height="1" forecolor="#666666"
+							   uuid="7a1f2a43-e398-4b15-bb0a-a7ee4812ae80"/>
+			</line>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="250" height="35" forecolor="#006699" backcolor="#E6E6E6"
+							   uuid="a4da4aec-0a3c-4444-821c-676591393360"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Liberation Mono" size="14" isBold="true" pdfEncoding="Cp1251" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Название]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="250" y="0" width="250" height="35" forecolor="#006699"
+							   backcolor="#E6E6E6" uuid="2125416a-e154-4e85-9236-c51dd9706751"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Liberation Mono" size="14" isBold="true" pdfEncoding="Cp1251" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Коллекция]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="500" y="0" width="250" height="35" forecolor="#006699"
+							   backcolor="#E6E6E6" uuid="d3532792-0862-4022-b576-e7dd0358cc8e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Liberation Mono" size="14" isBold="true" pdfEncoding="Cp1251" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Страна]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="750" y="0" width="100" height="35" forecolor="#006699"
+							   backcolor="#E6E6E6" uuid="d3532792-0862-4022-b576-e8dd0358cc8e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Liberation Mono" size="14" isBold="true" pdfEncoding="Cp1251" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Позиция]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="31">
+			<textField>
+				<reportElement x="0" y="0" width="250" height="20" uuid="6339be29-046b-4cd7-9563-dfac1b7da950"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Liberation Mono" size="14" pdfEncoding="Cp1251" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{stampName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="250" y="0" width="250" height="20" uuid="71e4fe6a-2ca1-4158-a9d3-9ef18a9d4398"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Liberation Mono" size="14" pdfEncoding="Cp1251" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{collectionName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="500" y="0" width="250" height="20" uuid="0833e829-7228-4f72-b6ed-9288c52219de"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Liberation Mono" size="14" pdfEncoding="Cp1251" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{country}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="750" y="0" width="100" height="20" uuid="0833e829-7228-4f72-b6ed-9388c52219de"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Liberation Mono" size="14" pdfEncoding="Cp1251" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{position}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="21"/>
+	</pageFooter>
+	<summary>
+		<band/>
+	</summary>
+</jasperReport>

@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  */
 public class SearchPanel extends JPanel {
 
-    public static final String DEFAULT_TEXT = "Enter text";
+    public static final String DEFAULT_TEXT = "Введите текст";
     private final JComboBox<String> filterProperty;
     private final JTextField filterValue;
     private final JButton search;
@@ -37,8 +37,8 @@ public class SearchPanel extends JPanel {
                     filterValue.setText(DEFAULT_TEXT);
             }
         });
-        search = new JButton("Search");
-        reset = new JButton("Reset");
+        search = new JButton("Искать");
+        reset = new JButton("Очистить");
         add(filterProperty);
         add(filterValue);
         add(search);

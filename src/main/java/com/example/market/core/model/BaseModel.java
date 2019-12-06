@@ -42,17 +42,17 @@ public class BaseModel<M extends Model>
     }
 
     @Override
-    public long getId() {
+    public final long getId() {
         return id;
     }
 
     @Override
-    public void setId(long id) {
+    public final void setId(long id) {
         this.id = id;
     }
 
     @Override
-    public String getName() {
+    public final String getName() {
         return getClass().getSimpleName();
     }
 
