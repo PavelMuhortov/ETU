@@ -64,7 +64,7 @@ public class SwingTableView<M extends Model<M>>
         Box contents = new Box(BoxLayout.Y_AXIS);
         add(contents, BorderLayout.CENTER);
         contents.add(new JScrollPane(table));
-        viewModel.refresh();
+        refresh();
     }
 
     @Override
@@ -101,20 +101,48 @@ public class SwingTableView<M extends Model<M>>
         toolBar.onDelete(this::deleteElements)
                 .onAdd(this::addElement)
                 .onSave(this::saveData)
-                .onRefresh(viewModel::refresh);
+                .onRefresh(this::refresh);
+    }
+
+    private void refresh() {
+        try {
+            viewModel.refresh();
+        } catch (Exception e) {
+            alert(e.getMessage());
+        }
     }
 
     private void saveData() {
-        save();
+        try {
+            save();
+        } catch (Exception e) {
+            alert(e.getMessage());
+        }
     }
 
     private void addElement() {
+        try {
+            add();
+        } catch (Exception e) {
+            alert(e.getMessage());
+        }
+    }
+
+    private void add() {
         LOG.debug("Add entry event received");
         final M model = viewModel.newOne();
         addNewRow(model);
     }
 
     private void deleteElements() {
+        try {
+            delete();
+        } catch (Exception e) {
+            alert(e.getMessage());
+        }
+    }
+
+    private void delete() {
         final int row = table.getSelectedRow();
         if (row >= 0) {
             long modelId = (long) tableModel.getValueAt(row, 0);
