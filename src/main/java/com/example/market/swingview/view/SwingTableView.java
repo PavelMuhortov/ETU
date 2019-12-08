@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -90,6 +92,23 @@ public class SwingTableView<M extends Model<M>>
     @Override
     public void alert(String alert) {
         JOptionPane.showMessageDialog(this, alert);
+    }
+
+    @Override
+    public boolean confirm(String message) {
+        return 0 == JOptionPane.showConfirmDialog(this,
+                message,
+                UIManager.getString("OptionPane.titleText"),
+                JOptionPane.OK_CANCEL_OPTION);
+    }
+
+    @Override
+    public void open(File file) {
+        try {
+            Desktop.getDesktop().open(file);
+        } catch (IOException e) {
+            alert("Невозможно открыть файл: " + file.toString());
+        }
     }
 
     /**

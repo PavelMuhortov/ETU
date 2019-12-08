@@ -3,6 +3,7 @@ package com.example.market.core.view;
 import com.example.market.core.model.Model;
 import com.example.market.core.viewmodel.TableViewModel;
 
+import java.io.File;
 import java.util.Collection;
 
 /**
@@ -19,6 +20,10 @@ public interface TableView<M extends Model<M>> {
     void showData(Collection<M> data);
 
     void alert(String alert);
+
+    boolean confirm(String message);
+
+    void open(File file);
 
     void setViewModel(TableViewModel<M> viewModel);
 

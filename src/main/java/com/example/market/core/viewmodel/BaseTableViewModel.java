@@ -5,6 +5,7 @@ import com.example.market.core.model.Model;
 import com.example.market.core.view.TableView;
 import com.example.market.tools.JasperExportHelper;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -76,6 +77,9 @@ public abstract class BaseTableViewModel<M extends Model<M>>
             new JasperExportHelper<M>()
                     .export(file, this::getData)
                     .get();
+            if (view.confirm("Открыть файл?")) {
+                view.open(new File(file));
+            }
         } catch (Exception e) {
             view.alert("Невозможно экспортировать данные. " + e.getLocalizedMessage());
         }
